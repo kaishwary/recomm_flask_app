@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>{% block title %}{% endblock %}</title>
+    <script src="static/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="static/bootstrap.min.css">
+
+    <script src="static/bootstrap.bundle.min.js"></script>
+
+    {% block styles %}{% endblock %}
+</head>
+
+<body>
+
+    {% block content %}
+
+    {% endblock %}
+
+    {% block scripts %}
+
+    {% endblock %}
+</body>
+
+</html>

@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block head %}
+{{super()}}
+
+
+{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="static/bootstrap-select.min.css" />
+<style>
+    /* Center the container horizontally and vertically */
+    .container-center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        padding-top: 10%;
+    }
+
+    .form-label {
+        padding-top: 10px;
+    }
+</style>
+
+<div class="container-center" style="height: 500px;">
+    <div class="card container" style="width: 50%">
+
+        <form class="border border-light p-5 " method="POST" action="/">
+            {{ form.hidden_tag() }}
+            {{ form.csrf_token }}
+
+            <p class="h4 mb-4 text-center">Instacart - Recommendation</p>
+            {{ form.product.label(class="form-label") }}
+
+            <br>
+            {{ form.product(class="selectpicker", **{'data-live-search':'true'})}}
+            <!-- <select id="select-product" class="selectpicker" multiple aria-label="Default select example"
+                data-live-search="true">
+            </select> -->
+
+            <br>
+
+            {{ form.user_id.label(class="form-label") }}
+            {{ form.user_id(class="form-control") }}
+            <br>
+            <label for="day">Day</label>
+            {{ form.day(class="form-select", id="day") }}
+            <br>
+            <label for="time">Time</label>
+            {{ form.time(class="form-select", id="time") }}
+            <br>
+            <div class="text-center">
+                <button class="btn btn-info w-100 text-center" type="submit">Submit</button>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        var now = new Date();
+        var day = now.toLocaleDateString('en-US', { weekday: 'long' });
+        var time = now.getHours().toString().padStart(2, '0') + '00';
+        console.log(time);
+        $('#day').val(day);
+        $('#time').val(time);
+    });
+
+
+
+    $(document).ready(function () {
+        console.log("inside ready!");
+    });
+
+    $(function () {
+        var select = $('#product').selectpicker();
+
+        var searchBoxElement = select.parent().find('.bs-searchbox > input');
+
+        searchBoxElement.on('keyup', (event) => {
+            // console.log();
+            fetchFilteredOptions(searchBoxElement.val());
+
+        });
+
+        function fetchFilteredOptions(searchQuery) {
+            $.ajax({
+                url: '/load_options',
+                type: 'GET',
+                data: { searchQuery: searchQuery },
+                success: function (response) {
+                    select.empty();
+                    $.each(response.options, function (index, option) {
+                        select.append('<option value="' + option.value + '">' + option.label + '</option>');
+                    });
+                    select.selectpicker('refresh');
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        }
+
+    });
+
+</script>
+
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+<script src="static/bootstrap-select.min.js"></script>
+
+
+{% endblock %}

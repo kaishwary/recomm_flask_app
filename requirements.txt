@@ -1,0 +1,13 @@
+annoy==1.17.2
+art==5.9
+efficient_apriori==2.0.3
+Flask==2.3.2
+Flask_Bootstrap==3.3.7.1
+Flask_Material==0.1.1
+Flask_WTF==1.1.1
+matplotlib==3.7.1
+numpy==1.24.3
+pandas==2.0.2
+plotly==5.14.1
+scikit_learn==1.2.2
+WTForms==3.0.1
