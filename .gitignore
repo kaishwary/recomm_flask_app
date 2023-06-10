@@ -1,0 +1,11 @@
+# Ignore pycache folder
+__pycache__/
+
+# Ignore .ipynb checkpoints
+*.ipynb_checkpoints/
+
+# Ignore .vscode folder
+.vscode/
+
+# Ignore data folder and its contents
+data/
