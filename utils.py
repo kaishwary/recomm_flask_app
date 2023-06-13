@@ -1,3 +1,32 @@
+"""
+Annoy Index Loader
+
+This code loads pre-trained Annoy indexes and provides utility functions for loading dataframes. It also defines various configuration parameters for vector size, metric, threshold values, and sample sizes.
+
+The code performs the following tasks:
+- Imports necessary modules and libraries for data processing and vector indexing.
+- Defines configuration parameters for vector size, metric, thresholds, and sample sizes.
+- Implements utility functions to load pre-trained Annoy indexes and dataframes.
+- Loads the Annoy indexes for product, user, basket, and daytime vectors.
+
+Utility Functions:
+- load_dataframes: Loads the product, order_basket, and df_daytime_basket dataframes from pickle files.
+- load_annoy_objects: Loads the pre-trained Annoy indexes for product, user, basket, and daytime vectors.
+
+Configuration Parameters:
+- VECTOR_SIZE: Dimension of the vectors.
+- METRIC: Metric used to calculate vector similarity.
+- ORDER_RETURNS: Number of orders/baskets to pull similar to the requested.
+- TREES: Number of trees for queries.
+- TSNE_SIZE: Sample size for the t-SNE model and plot.
+- THRESHOLD_SUPPORT: Threshold for minimum support.
+- THRESHOLD_TOP: Threshold for the maximum number of products to bring.
+- THRESHOLD_DISTANCE: Threshold for distance, based on the quantile calculation of the basket distances.
+- DAYTIME_NEIGHBOURS: Number of neighbours to choose from for daytime impact.
+
+File name: utils.py
+"""
+
 import pandas as pd
 import numpy as np
 

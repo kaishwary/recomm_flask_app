@@ -1,8 +1,25 @@
 """
 app.py
 
-This file contains the main Flask application for the recommendation engine web service. 
-It defines the routes, form classes, and functions necessary for handling user requests and generating recommendations.
+This file contains the main Flask application for the recommendation engine web service. It defines the routes, form classes, and functions necessary for handling user requests and generating recommendations.
+
+The code performs the following tasks:
+- Imports necessary modules and libraries for the Flask application.
+- Defines a Flask application object and sets the secret key.
+- Initializes the Bootstrap extension for Flask.
+- Creates an instance of the RecommendationEngine class.
+- Defines a FlaskForm class for collecting product information and user details.
+- Defines a function to fetch options from the product list based on a search query.
+- Defines route handlers for serving HTML templates, loading search options dynamically via AJAX call, and processing form submissions.
+
+Utility Functions:
+- fetch_options: Fetches options from the product list based on a search query.
+
+Routes:
+- '/load_options': Route to dynamically serve search options via an AJAX call.
+- '/': Main route for the web service. Handles GET and POST requests for the recommendation form.
+
+File name: app.py
 """
 
 from engine import RecommendationEngine, products
@@ -62,16 +79,6 @@ def fetch_options(search_query=None):
         # print([option for option in pl if search_query.lower() in option.lower()][:5])
         return [{"value": option, "label": option} for option in pl if search_query.lower() in option.lower()][:50]
         # return [option for option in pl if search_query.lower() in option.lower()][:50]
-
-# TODO - remove once testing done
-@app.route('/base', methods=['GET'])
-def serve_base():
-    return render_template('base.html')
-
-# TODO - remove once testing done
-@app.route('/index', methods=['GET'])
-def serve_index():
-    return render_template('index.html')
 
 # Route to dynamically serve search options via AJAX call
 @app.route('/load_options', methods=['GET'])
