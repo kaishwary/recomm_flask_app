@@ -1,11 +1,17 @@
+"""
+app.py
+
+This file contains the main Flask application for the recommendation engine web service. 
+It defines the routes, form classes, and functions necessary for handling user requests and generating recommendations.
+"""
+
+from engine import RecommendationEngine, products
+import pandas as pd
 from flask import Flask, render_template, request, jsonify
 from flask_bootstrap import Bootstrap
-from flask_material import Material
-from forms import ProductForm
-from dummy import plotly_tsne
 
-import pandas as pd
-from engine import RecommendationEngine, products_df
+from flask_wtf import FlaskForm
+from wtforms import StringField, SelectField, SelectMultipleField
 
 
 app = Flask(__name__)
@@ -14,10 +20,41 @@ bootstrap = Bootstrap(app)
 # recommendation engine
 r_engine = RecommendationEngine()
 # product list - to be used for populating search box
-pl = products_df.product_name.to_list()
+pl = products.product_name.to_list()
+
+
+class ProductForm(FlaskForm):
+    """
+    Represents a form for collecting product information and user details.
+
+    This form includes fields for selecting multiple products, entering a user ID, choosing a day, and selecting a time.
+
+    Attributes:
+        product (SelectMultipleField): A multiple-choice field for selecting products.
+        user_id (StringField): A text input field for entering the user ID.
+        day (SelectField): A dropdown menu for selecting a day of the week.
+        time (SelectField): A dropdown menu for selecting a time of the day.
+    """
+    product = SelectMultipleField('Enter Product', default=None)
+    user_id = StringField('Enter User ID', default=None)
+    day = SelectField('Day', choices=[('Monday', 'Monday'), ('Tuesday', 'Tuesday'), ('Wednesday', 'Wednesday'), (
+        'Thursday', 'Thursday'), ('Friday', 'Friday'), ('Saturday', 'Saturday'), ('Sunday', 'Sunday')])
+    time = SelectField('Time', choices=[
+                       (f'{hour:02d}00', f'{hour:02d}:00') for hour in range(24)], coerce=int)
 
 
 def fetch_options(search_query=None):
+    """
+    Fetches options from product list based on a search query.
+    Called when search term is entered in Product Select box
+
+    Args:
+        search_query (str): The search query to filter the options. Defaults to None.
+
+    Returns:
+        list: A list of dictionaries representing the options. Each dictionary has "value" and "label" keys.
+
+    """
     # print(search_query)
     if search_query is None or search_query == '':
         return [{"value": option, "label": option} for option in pl[:10]]
@@ -27,22 +64,16 @@ def fetch_options(search_query=None):
         # return [option for option in pl if search_query.lower() in option.lower()][:50]
 
 # TODO - remove once testing done
-
-
 @app.route('/base', methods=['GET'])
 def serve_base():
     return render_template('base.html')
 
 # TODO - remove once testing done
-
-
 @app.route('/index', methods=['GET'])
 def serve_index():
     return render_template('index.html')
 
 # Route to dynamically serve search options via AJAX call
-
-
 @app.route('/load_options', methods=['GET'])
 def load_options():
     search_query = request.args.get('searchQuery')
@@ -51,8 +82,6 @@ def load_options():
     return jsonify({'options': options})
 
 # Main route
-
-
 @app.route('/', methods=['GET', 'POST'])
 def index():
     form = ProductForm()
@@ -60,7 +89,7 @@ def index():
     if request.method == 'POST':
         # Process the form data
         # Product list
-        product = form.product.data
+        product_input = form.product.data
         # user ID list
         user_id_raw = form.user_id.data
         if user_id_raw == '':
@@ -73,7 +102,7 @@ def index():
 
         # Generate input datafarme
         input_df = pd.DataFrame.from_dict({
-            "Product(s)": ", ".join(product),
+            "Product(s)": ", ".join(product_input),
             "User ID(s)": user_id_raw,
             "Day of Week": day,
             "Time of Day (hrs)": form.time.data
@@ -81,21 +110,23 @@ def index():
                                                       index=True, justify='center')
 
         # Generate predictions
-        df = r_engine.generatePredictions(product, user_id, day, time)
+        df, _, _, _, _ = r_engine.generatePredictions(product_input, user_id, day, time)
         htmlTable = df.to_html(
             classes='table table-striped table-hover',
             index=False, justify='center')
 
+        graphJSON = r_engine.tSNEPlot(selection = df.product_name.tolist(), inputs=product_input)
         # Generate tSNE plot
-        graphJSON = plotly_tsne()
+        # graphJSON = plotly_tsne()
 
         errors = []
         for field_name, field_errors in form.errors.items():
             errors.extend(field_errors)
 
-        # You can now handle the specific validation errors
+        # handle the specific validation errors
         # based on the field names or display a generic error message
         print("Validation errors:", errors)
+
         if not errors:
             return render_template('result.html', resulttable=[htmlTable], titles=['na'],
                                    inputtable=[input_df],

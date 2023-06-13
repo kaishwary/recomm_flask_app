@@ -21,6 +21,11 @@
     .form-label {
         padding-top: 10px;
     }
+
+    .filter-option {
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
 </style>
 
 <div class="container-center" style="height: 500px;">
@@ -34,10 +39,8 @@
             {{ form.product.label(class="form-label") }}
 
             <br>
-            {{ form.product(class="selectpicker", **{'data-live-search':'true'})}}
-            <!-- <select id="select-product" class="selectpicker" multiple aria-label="Default select example"
-                data-live-search="true">
-            </select> -->
+            {{ form.product(class="selectpicker", **{'data-live-search':'true',
+            'data-width':'fit', 'data-container':'.card .container', 'data-maintain-selected':'true'})}}
 
             <br>
 
@@ -73,8 +76,6 @@
         $('#time').val(time);
     });
 
-
-
     $(document).ready(function () {
         console.log("inside ready!");
     });
@@ -96,7 +97,9 @@
                 type: 'GET',
                 data: { searchQuery: searchQuery },
                 success: function (response) {
-                    select.empty();
+                    var ddlist = select.parent().find('.dropdown-menu > .inner > .dropdown-menu');
+                    ddlist.empty();
+                    // select.empty();
                     $.each(response.options, function (index, option) {
                         select.append('<option value="' + option.value + '">' + option.label + '</option>');
                     });
