@@ -6,6 +6,15 @@
 
 {% endblock %}
 
+{% block styles %}
+{{super()}}
+<link href="static/select2.min.css" rel="stylesheet" />
+<script src="static/select2.min.js"></script>
+
+<!-- <script src="static/bootstrap-select.min.js"></script> -->
+
+{% endblock %}
+
 {% block content %}
 <link rel="stylesheet" href="static/bootstrap-select.min.css" />
 <style>
@@ -35,12 +44,16 @@
             {{ form.hidden_tag() }}
             {{ form.csrf_token }}
 
+
             <p class="h4 mb-4 text-center">Instacart - Recommendation</p>
             {{ form.product.label(class="form-label") }}
 
             <br>
-            {{ form.product(class="selectpicker", **{'data-live-search':'true',
-            'data-width':'fit', 'data-container':'.card .container', 'data-maintain-selected':'true'})}}
+
+            {{
+            form.product(class="js-data-example-ajax", **{'style':'width: 100%;',
+            'multiple':'multiple'})
+            }}
 
             <br>
 
@@ -76,41 +89,18 @@
         $('#time').val(time);
     });
 
-    $(document).ready(function () {
-        console.log("inside ready!");
+    $('.js-data-example-ajax').select2({
+        ajax: {
+            url: '/load_options',
+            dataType: 'json'
+            // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+        }
     });
 
-    $(function () {
-        var select = $('#product').selectpicker();
-
-        var searchBoxElement = select.parent().find('.bs-searchbox > input');
-
-        searchBoxElement.on('keyup', (event) => {
-            // console.log();
-            fetchFilteredOptions(searchBoxElement.val());
-
-        });
-
-        function fetchFilteredOptions(searchQuery) {
-            $.ajax({
-                url: '/load_options',
-                type: 'GET',
-                data: { searchQuery: searchQuery },
-                success: function (response) {
-                    var ddlist = select.parent().find('.dropdown-menu > .inner > .dropdown-menu');
-                    ddlist.empty();
-                    // select.empty();
-                    $.each(response.options, function (index, option) {
-                        select.append('<option value="' + option.value + '">' + option.label + '</option>');
-                    });
-                    select.selectpicker('refresh');
-                },
-                error: function (error) {
-                    console.log(error);
-                }
-            });
-        }
-
+    $('.btn').on("click", function () {
+        $(this).removeClass("btn-info");
+        $(this).addClass("btn-secondary");
+        $(this).disabled = true;
     });
 
 </script>

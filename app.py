@@ -74,19 +74,19 @@ def fetch_options(search_query=None):
     """
     # print(search_query)
     if search_query is None or search_query == '':
-        return [{"value": option, "label": option} for option in pl[:10]]
+        return [{"id": option, "text": option} for option in pl[:10]]
     else:
         # print([option for option in pl if search_query.lower() in option.lower()][:5])
-        return [{"value": option, "label": option} for option in pl if search_query.lower() in option.lower()][:50]
+        return [{"id": option, "text": option} for option in pl if search_query.lower() in option.lower()][:50]
         # return [option for option in pl if search_query.lower() in option.lower()][:50]
 
 # Route to dynamically serve search options via AJAX call
 @app.route('/load_options', methods=['GET'])
 def load_options():
-    search_query = request.args.get('searchQuery')
+    search_query = request.args.get('term')
     # Fetch and filter options based on the search query
     options = fetch_options(search_query)
-    return jsonify({'options': options})
+    return jsonify({'results': options})
 
 # Main route
 @app.route('/', methods=['GET', 'POST'])
