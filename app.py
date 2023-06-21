@@ -117,7 +117,7 @@ def index():
                                                       index=True, justify='center')
 
         # Generate predictions
-        df, _, _, _, _ = r_engine.generatePredictions(product_input, user_id, day, time)
+        df = r_engine.generatePredictions(product_input, user_id, day, time)
         htmlTable = df.to_html(
             classes='table table-striped table-hover',
             index=False, justify='center')
